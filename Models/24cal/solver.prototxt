@@ -1,0 +1,16 @@
+net: "/home/xileli/Documents/program/CNN_face_detection_models/face_24_cal/train_val.prototxt"
+test_iter: 40
+test_interval:2500
+# The base learning rate, momentum and the weight decay of the network.
+base_lr: 0.00125 #0.005
+momentum: 0.9
+weight_decay: 0.008
+# The learning rate policy
+lr_policy: "step"
+stepsize: 10000 #30000
+gamma: 0.5
+display: 500
+max_iter: 400000
+snapshot: 2500 #10000
+snapshot_prefix: "/home/xileli/Documents/dateset/AFW/models/24cal/"
+solver_mode: GPU
