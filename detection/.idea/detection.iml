@@ -11,16 +11,24 @@
     <orderEntry type="module-library">
       <library name="Header Search Paths">
         <CLASSES>
+          <root url="file:///usr/include" />
           <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
           <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include" />
-          <root url="file:///usr/include" />
           <root url="file:///usr/local/include" />
+          <root url="file:///usr/local/cuda/include" />
+          <root url="file://$MODULE_DIR$/../../../library/caffe/include" />
+          <root url="file://$MODULE_DIR$/../../../library/caffe/src" />
+          <root url="file://$MODULE_DIR$/../../../library/caffe/cmake_build/include" />
         </CLASSES>
         <SOURCES>
+          <root url="file:///usr/include" />
           <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
           <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include" />
-          <root url="file:///usr/include" />
           <root url="file:///usr/local/include" />
+          <root url="file:///usr/local/cuda/include" />
+          <root url="file://$MODULE_DIR$/../../../library/caffe/include" />
+          <root url="file://$MODULE_DIR$/../../../library/caffe/src" />
+          <root url="file://$MODULE_DIR$/../../../library/caffe/cmake_build/include" />
         </SOURCES>
       </library>
     </orderEntry>

@@ -40,7 +40,10 @@ public:
     void global_NMS();
     void global_NMS_specify();
 
-    void genereate_init_rectangles();
+    float IoU(cv::Rect rect1, cv::Rect rect2);
+    float IoM(cv::Rect rect1, cv::Rect rect2);
+
+    void generate_init_rectangles();
     void detect_net(int i);
     void calibrate_net(int i);
     void calibrate(std::vector<float> prediction, int j);
@@ -50,12 +53,6 @@ public:
     cv::Mat img_;
     std::vector<cv::Rect> rectangles_;
     std::vector<float> confidence_;
-//    std::shared_ptr<Net<float> > net12c_;
-//    std::shared_ptr<Net<float> > net12cal_;
-//    std::shared_ptr<Net<float> > net24c_;
-//    std::shared_ptr<Net<float> > net24cal_;
-//    std::shared_ptr<Net<float> > net48c_;
-//    std::shared_ptr<Net<float> > net48cal_;
 
     std::vector<std::shared_ptr<Net<float>>> nets_;
     std::vector<cv::Size> input_geometry_;
@@ -65,16 +62,9 @@ public:
     float threshold_confidence_ = 0.1;
     float threshold_NMS_ = 0.3;
     float scale_factor_ = 1.414;
-    int small_face_size_ = 48;
 
     int mode_pu_ = 1; //mode decides processing the neural network with cpu (0) or gpu (1)
 
-    struct Face
-    {
-        cv::Rect rectangle;
-        float confidence;
-        double scale;
-    };
 };
 
 

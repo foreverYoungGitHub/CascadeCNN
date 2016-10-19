@@ -34,7 +34,6 @@ CascadeCNN::CascadeCNN(const std::vector<std::string> model_file,
         num_channel = input_layer->channels();
         input_geometry = cv::Size(input_layer->width(), input_layer->height());
 
-//        net12c_ = net;
         nets_.push_back(net);
         input_geometry_.push_back(input_geometry);
         if(i == 0)
@@ -132,7 +131,7 @@ void CascadeCNN::Preprocess(const cv::Mat &img)
 
 void CascadeCNN::detect_12c_net()
 {
-    genereate_init_rectangles();
+    generate_init_rectangles();
     detect_net(0);
 }
 
@@ -164,26 +163,127 @@ void CascadeCNN::cal_48c_net()
 void CascadeCNN::local_NMS()
 {
     std::vector<cv::Rect> cur_rects = rectangles_;
-    int num_rects = cur_rects.size();
+    std::vector<float> confidence = confidence_;
     float threshold = threshold_NMS_;
+
+
+    for(int i = 0; i < cur_rects.size(); i++)
+    {
+        for(int j = i + 1; j < cur_rects.size(); )
+        {
+            if(IoU(cur_rects[i], cur_rects[j]) > threshold)
+            {
+                if(confidence[i] >= confidence[j])
+                {
+                    cur_rects.erase(cur_rects.begin() + j);
+                    confidence.erase(confidence.begin() + j);
+                }
+                else
+                {
+                    cur_rects.erase(cur_rects.begin() + i);
+                    confidence.erase(confidence.begin() + i);
+                    break;
+                }
+            }
+            else
+            {
+                j++;
+            }
+        }
+    }
+
+    rectangles_ = cur_rects;
+    confidence_ = confidence;
 
 }
 
 void CascadeCNN::global_NMS()
 {
     std::vector<cv::Rect> cur_rects = rectangles_;
-    int num_rects = cur_rects.size();
-    float threshold = threshold_NMS_;
+    std::vector<float> confidence = confidence_;
+    float threshold_IoM = threshold_NMS_;
+    float threshold_IoU = threshold_NMS_ - 0.1;
+
+
+    for(int i = 0; i < cur_rects.size(); i++)
+    {
+        for(int j = i + 1; j < cur_rects.size(); )
+        {
+            if(IoU(cur_rects[i], cur_rects[j]) > threshold_IoU || IoM(cur_rects[i], cur_rects[j]) > threshold_IoM)
+            {
+                if(confidence[i] >= confidence[j] && confidence[j] < 0.85) //if confidence[i] == confidence[j], it keeps the small one
+                {
+                    cur_rects.erase(cur_rects.begin() + j);
+                    confidence.erase(confidence.begin() + j);
+                }
+                else if(confidence[i] >= confidence[j] && confidence[i] < 0.85)
+                {
+                    cur_rects.erase(cur_rects.begin() + i);
+                    confidence.erase(confidence.begin() + i);
+                    break;
+                }
+                else
+                {
+                    j++;
+                }
+            }
+            else
+            {
+                j++;
+            }
+        }
+    }
+
+    rectangles_ = cur_rects;
+    confidence_ = confidence;
 }
 
+/*
+ * for now global_NMS_specify() is completely same with global_NMS()
+ * the condition need to change after test
+ */
 void CascadeCNN::global_NMS_specify()
 {
     std::vector<cv::Rect> cur_rects = rectangles_;
-    int num_rects = cur_rects.size();
-    float threshold = threshold_NMS_;
+    std::vector<float> confidence = confidence_;
+    float threshold_IoM = threshold_NMS_;
+    float threshold_IoU = threshold_NMS_ - 0.1;
+
+    for(int i = 0; i < cur_rects.size(); i++)
+    {
+        for(int j = i + 1; j < cur_rects.size(); )
+        {
+            //the condition need to change after test
+            if(IoU(cur_rects[i], cur_rects[j]) > threshold_IoU || IoM(cur_rects[i], cur_rects[j]) > threshold_IoM)
+            {
+                if(confidence[i] >= confidence[j] && confidence[j] < 0.85) //if confidence[i] == confidence[j], it keeps the small one
+                {
+                    cur_rects.erase(cur_rects.begin() + j);
+                    confidence.erase(confidence.begin() + j);
+                }
+                else if(confidence[i] >= confidence[j] && confidence[i] < 0.85)
+                {
+                    cur_rects.erase(cur_rects.begin() + i);
+                    confidence.erase(confidence.begin() + i);
+                    break;
+                }
+                else
+                {
+                    j++;
+                }
+            }
+            else
+            {
+                j++;
+            }
+        }
+    }
+
+    rectangles_ = cur_rects;
+    confidence_ = confidence;
 }
 
-void CascadeCNN::genereate_init_rectangles()
+void CascadeCNN::generate_init_rectangles()
 {
     int dimension = 12;
     std::vector<cv::Rect> rects;
@@ -306,8 +406,41 @@ void CascadeCNN::calibrate(std::vector<float> prediction, int j)
     rect.height = std::min(img_.rows - rectangles_[j].y, int(1.1 * rectangles_[j].height / s_change));
 
     rectangles_[j] = rect;
+
+    //something need to test
+    /*
+     * this function related to the confidence value in the next NMS step,
+     * it will decide which element should be delete
+     */
+    std::vector<float> pred;
+    for(int i = 0; i < index.size(); i++)
+    {
+        pred.push_back(prediction[index[i]]);
+    }
+    float conf = *std::max_element(pred.begin(), pred.end());
+    confidence_[j] = conf;
+
 }
 
+float CascadeCNN::IoU(cv::Rect rect1, cv::Rect rect2)
+{
+    int x_overlap, y_overlap, intersection, unions;
+    x_overlap = std::max(0, std::min((rect1.x + rect1.width), (rect2.x + rect2.width)) - std::min(rect1.x, rect2.x));
+    y_overlap = std::max(0, std::min((rect1.y + rect1.height), (rect2.y + rect2.height)) - std::min(rect1.y, rect2.y));
+    intersection = x_overlap * y_overlap;
+    unions = rect1.width * rect1.height + rect2.width * rect2.height - intersection;
+    return float(intersection)/unions;
+}
+
+float CascadeCNN::IoM(cv::Rect rect1, cv::Rect rect2)
+{
+    int x_overlap, y_overlap, intersection, min_area;
+    x_overlap = std::max(0, std::min((rect1.x + rect1.width), (rect2.x + rect2.width)) - std::min(rect1.x, rect2.x));
+    y_overlap = std::max(0, std::min((rect1.y + rect1.height), (rect2.y + rect2.height)) - std::min(rect1.y, rect2.y));
+    intersection = x_overlap * y_overlap;
+    min_area = std::min((rect1.width * rect1.height), (rect2.width * rect2.height));
+    return float(intersection)/min_area;
+}
 
 std::vector<float> CascadeCNN::Predict(const cv::Mat& img, int i)
 {
