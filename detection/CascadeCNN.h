@@ -1,5 +1,5 @@
 //
-// Created by 刘阳 on 16/10/17.
+// Created by Yang on 16/10/17.
 //
 
 #ifndef CASCADECNN_CASCADECNN_H
@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
+
+using namespace caffe;
 
 class CascadeCNN {
 
@@ -18,10 +21,12 @@ public:
     CascadeCNN(const std::vector<std::string> model_file, const std::vector<std::string> trained_file, const std::string& mean_file);
     ~CascadeCNN();
 
-    void detection(const cv::Mat& img, std::vector<cv::Rect>* rectangles);
+    void detection(const cv::Mat& img, std::vector<cv::Rect>& rectangles);
 
-    void SetMean(const string& mean_file);
-    void WrapInputLayer(std::vector<cv::Mat>* input_channels);
+    std::vector<float> Predict(const cv::Mat& img, int i);
+
+    void SetMean(const std::string& mean_file);
+    void WrapInputLayer(const cv::Mat& img, std::vector<cv::Mat>* input_channels, int i);
     void Preprocess(const cv::Mat& img);
 
     void detect_12c_net();
@@ -38,16 +43,26 @@ public:
     void genereate_init_rectangles();
     void detect_net(int i);
     void calibrate_net(int i);
+    void calibrate(std::vector<float> prediction, int j);
+
+    cv::Mat crop(cv::Mat img, cv::Rect rect);
 
     cv::Mat img_;
     std::vector<cv::Rect> rectangles_;
     std::vector<float> confidence_;
-    shared_ptr<Net<float> > 12c_, 12cal_, 24c_, 24cal_, 48c_, 48cal_;
-    std::vector<shared_ptr<Net<float> >> nets_;
+//    std::shared_ptr<Net<float> > net12c_;
+//    std::shared_ptr<Net<float> > net12cal_;
+//    std::shared_ptr<Net<float> > net24c_;
+//    std::shared_ptr<Net<float> > net24cal_;
+//    std::shared_ptr<Net<float> > net48c_;
+//    std::shared_ptr<Net<float> > net48cal_;
+
+    std::vector<std::shared_ptr<Net<float>>> nets_;
     std::vector<cv::Size> input_geometry_;
     int num_channels_;
     std::vector<cv::Mat> mean_;
 
+    float threshold_confidence_ = 0.1;
     float threshold_NMS_ = 0.3;
     float scale_factor_ = 1.414;
     int small_face_size_ = 48;
