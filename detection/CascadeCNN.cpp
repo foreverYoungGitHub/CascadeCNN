@@ -214,8 +214,14 @@ void CascadeCNN::Preprocess(const cv::Mat &img)
 void CascadeCNN::detect_12c_net()
 {
     generate_init_rectangles();
-    detect_net(0);
+//    detect_net(0);
+    detect_net_batch(0);
 //    detect_net_12(0);
+}
+
+void CascadeCNN::detect_12c_net_batch()
+{
+
 }
 
 //void CascadeCNN::detect_12c_net_test()
@@ -228,16 +234,16 @@ void CascadeCNN::detect_12c_net()
 //    float cur_scale = dimension_ / 12;
 //    cv::Mat img_resized;
 //    while(img_resized.cols > 12 && img_resized.rows > 12){
-//    cv::Size img_dim = cv::Size(img_.cols/cur_scale, img_.rows/cur_scale);
-//    cv::resize(img_, img_resized, img_dim);
-//    std::vector<float> prediction = Predict(img_resized, 0);
-//    int index = 0;
-//    cv::Rect cur_rect;
+//      cv::Size img_dim = cv::Size(img_.cols/cur_scale, img_.rows/cur_scale);
+//      cv::resize(img_, img_resized, img_dim);
+//      std::vector<float> prediction = Predict(img_resized, 0);
+//      int index = 0;
+//      cv::Rect cur_rect;
 //
-//        if (prediction.size() >= index) {
+//      if (prediction.size() >= index) {
 //            for (int i = 0; i <= img_resized.cols - dimension_; i += 2) {
 //
-//                for (int j = 0; j <= img_resized.rows - dimension_; i += 2) {
+//                for (int j = 0; j <= img_resized.rows - dimension_; j += 2) {
 //                    if (prediction[index] > threshold_confidence) {
 //                        cur_rect = CvRect(2 * i * cur_scale, 2 * j * cur_scale, dimension_, dimension_);
 //                        rectangles.push_back(cur_rect);
@@ -511,33 +517,84 @@ void CascadeCNN::generate_init_rectangles()
     confidence_ = confidence;
 }
 
-//void CascadeCNN::detect_net(int i)
-//{
-//    std::shared_ptr<Net<float>> net = nets_[i];
-//    float threshold_confidence = threshold_confidence_ / 2 ;
-//    std::vector<cv::Rect> rectangles;
-//    std::vector<float> confidence;
-//    //cv::Size scale = cv::Size(48, 48);
-//    for(int j = 0; j < rectangles_.size(); j++)
-//    {
-//        cv::Mat img = crop(img_, rectangles_[j]);
-//        if (img.size() != input_geometry_[i])
-//            cv::resize(img, img, input_geometry_[i]);
-//
-//        //std::vector<cv::Mat> input_channels;
-//        std::vector<float> prediction = Predict(img, i);
-//        float conf = prediction[1];
-//
-//        if(conf > threshold_confidence)
+
+void CascadeCNN::detect_net(int i)
+{
+    std::shared_ptr<Net<float>> net = nets_[i];
+    float threshold_confidence = threshold_confidence_ / 2 ;
+    std::vector<cv::Rect> rectangles;
+    std::vector<float> confidence;
+    //cv::Size scale = cv::Size(48, 48);
+    for(int j = 0; j < rectangles_.size(); j++)
+    {
+        cv::Mat img = crop(img_, rectangles_[j]);
+        if (img.size() != input_geometry_[i])
+            cv::resize(img, img, input_geometry_[i]);
+
+        //std::vector<cv::Mat> input_channels;
+        std::vector<float> prediction = Predict(img, i);
+        float conf = prediction[1];
+
+        if(conf > threshold_confidence)
+        {
+            rectangles.push_back(rectangles_[j]);
+            confidence.push_back(conf);
+        }
+    }
+
+    rectangles_ = rectangles;
+    confidence_ = confidence;
+}
+
+void CascadeCNN::detect_net_batch(int i) {
+    std::shared_ptr<Net<float>> net = nets_[i];
+    Blob<float> *input_layer = nets_[i]->input_blobs()[i];
+    int num = input_layer->num();
+    float threshold_confidence = threshold_confidence_ / 2;
+    std::vector<cv::Rect> rectangles;
+    std::vector<float> confidence;
+    vector<cv::Mat> cur_imgs;
+    for (int j = 0; j < rectangles_.size(); j++) {
+        cv::Mat img = crop(img_, rectangles_[j]);
+        if (img.size() != input_geometry_[i])
+            cv::resize(img, img, input_geometry_[i]);
+        cur_imgs.push_back(img);
+    }
+
+    std::vector<float> prediction = Predict(cur_imgs, i);
+
+    float conf;
+
+    for(int j = 0; j < prediction.size() / 2; j++)
+    {
+        conf = prediction[2*j+1];
+        if (conf > threshold_confidence) {
+            rectangles.push_back(rectangles_[j]);
+            confidence.push_back(conf);
+        }
+    }
+
+    cur_imgs.clear();
+//        if(j % num == 0 || j == rectangles_.size())
 //        {
-//            rectangles.push_back(rectangles_[j]);
-//            confidence.push_back(conf);
-//        }
-//    }
+//            std::vector<float> prediction = Predict(cur_imgs, i);
+//            float conf;
 //
-//    rectangles_ = rectangles;
-//    confidence_ = confidence;
-//}
+//            for(int k = 0; k < prediction.size() / 2; k++)
+//            {
+//                conf = prediction[2*k+1];
+//                if (conf > threshold_confidence) {
+//                    rectangles.push_back(rectangles_[j]);
+//                    confidence.push_back(conf);
+//                }
+//            }
+//
+//            cur_imgs.clear();
+//        }
+
+    rectangles_ = rectangles;
+    confidence_ = confidence;
+}
 
 void CascadeCNN::calibrate_net(int i)
 {
@@ -673,13 +730,37 @@ std::vector<float> CascadeCNN::Predict(const cv::Mat& img, int i)
 
     std::vector<cv::Mat> input_channels;
     WrapInputLayer(img, &input_channels, i);
-
+    //WrapInputLayer(img, i);
     net->Forward();
 
     /* Copy the output layer to a std::vector */
     Blob<float>* output_layer = net->output_blobs()[0];
     const float* begin = output_layer->cpu_data();
     const float* end = begin + output_layer->channels();
+    return std::vector<float>(begin, end);
+}
+
+std::vector<float> CascadeCNN::Predict(const std::vector<cv::Mat> imgs, int i)
+{
+    std::shared_ptr<Net<float>> net = nets_[i];
+
+    Blob<float>* input_layer = net->input_blobs()[0];
+    input_layer->Reshape(imgs.size(), num_channels_,
+                         input_geometry_[i].height, input_geometry_[i].width);
+    int num = input_layer->num();
+    /* Forward dimension change to all layers. */
+    net->Reshape();
+
+    std::vector<cv::Mat> input_channels;
+    WrapBatchInputLayer(imgs, &input_channels, i);
+    //WrapInputLayer(img, &input_channels, i);
+
+    net->Forward();
+
+    /* Copy the output layer to a std::vector */
+    Blob<float>* output_layer = net->output_blobs()[0];
+    const float* begin = output_layer->cpu_data();
+    const float* end = begin + output_layer->channels() * output_layer->num();
     return std::vector<float>(begin, end);
 }
 
@@ -728,6 +809,53 @@ void CascadeCNN::WrapInputLayer(const cv::Mat& img, std::vector<cv::Mat> *input_
      * objects in input_channels. */
     cv::split(img, *input_channels);
 
+}
+
+void CascadeCNN::WrapInputLayer(const cv::Mat& img, int i)
+{
+    Blob<float>* input_layer = nets_[i]->input_blobs()[0];
+
+    int width = input_layer->width();
+    int height = input_layer->height();
+    float* input_data = input_layer->mutable_cpu_data();
+
+    std::vector<cv::Mat> *input_channels;
+    for (int j = 0; j < input_layer->channels(); ++j)
+    {
+        cv::Mat channel(height, width, CV_32FC1, input_data);
+        input_channels->push_back(channel);
+        input_data += width * height;
+    }
+
+
+    //cv::Mat sample_normalized;
+    //cv::subtract(img, mean_[i], img);
+    /* This operation will write the separate BGR planes directly to the
+     * input layer of the network because it is wrapped by the cv::Mat
+     * objects in input_channels. */
+    cv::split(img, *input_channels);
+
+}
+
+void CascadeCNN::WrapBatchInputLayer(const vector<cv::Mat> imgs, std::vector<cv::Mat> *input_channels, int i) {
+    Blob<float> *input_layer = nets_[i]->input_blobs()[0];
+
+    int width = input_layer->width();
+    int height = input_layer->height();
+    int num = input_layer->num();
+    float *input_data = input_layer->mutable_cpu_data();
+
+    for (int j = 0; j < num; j++) {
+        //std::vector<cv::Mat> *input_channels;
+        for (int k = 0; k < input_layer->channels(); ++k) {
+            cv::Mat channel(height, width, CV_32FC1, input_data);
+            input_channels->push_back(channel);
+            input_data += width * height;
+        }
+        cv::Mat img = imgs[j];
+        cv::split(img, *input_channels);
+        input_channels->clear();
+    }
 }
 
 cv::Mat CascadeCNN::crop(cv::Mat img, cv::Rect rect)
