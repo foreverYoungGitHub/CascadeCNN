@@ -26,7 +26,6 @@ public:
 
     std::vector<float> Predict(const cv::Mat& img, int i);
     std::vector<float> Predict(const std::vector<cv::Mat> imgs, int i);
-    std::vector<float> Predict_12(const cv::Mat& img, int i);
 
     void SetMean(const std::string& mean_file);
     cv::Mat SetMean(cv::Mat img, const std::string& mean_file);
@@ -36,8 +35,6 @@ public:
     void Preprocess(const cv::Mat& img);
 
     void detect_12c_net();
-    void detect_12c_net_test();
-    void detect_12c_net_batch();
     void cal_12c_net();
     void detect_24c_net();
     void cal_24c_net();
@@ -52,11 +49,11 @@ public:
     float IoU(cv::Rect rect1, cv::Rect rect2);
     float IoM(cv::Rect rect1, cv::Rect rect2);
 
-    void detect_net_12(int i);
     void generate_init_rectangles();
     void detect_net(int i);
     void detect_net_batch(int i);
     void calibrate_net(int i);
+    void calibrate_net_batch(int i);
     void calibrate(std::vector<float> prediction, int j);
     void img_show(cv::Mat img, std::string name);
 
@@ -72,7 +69,6 @@ public:
     std::vector<cv::Mat> mean_;
     std::string mean_file_;
 
-    vector<cv::Mat> input_img_;
     int strip_ = 4;
     float threshold_confidence_ = 0.1;
     float threshold_NMS_ = 0.3;
