@@ -8,8 +8,9 @@ Repository for "[A Convolutional Neural Network Cascade for Face Detection](http
 
 The results of each procedure in Cascade CNNs are contained in result folder. The final results are shown in the flowing. These two pictures are collected by AFW and MegaFace separately.
 
-<img src="https://github.com/foreverYoungGitHub/CascadeCNN/blob/master/result/9.jpg" width="200">
+<img src="https://github.com/foreverYoungGitHub/CascadeCNN/blob/master/result//4_Dancing_Dancing_4_33/9.jpg" width="200">
 <img src="https://github.com/foreverYoungGitHub/CascadeCNN/blob/master/result/121_12105541%40N05_4811548600_1/8.jpg" width="197">
+<img src="https://github.com/foreverYoungGitHub/CascadeCNN/blob/master/result/901_9019583%40N08_8032652775_0/8.jpg" width="290">
 
 ### Time Cost
 
