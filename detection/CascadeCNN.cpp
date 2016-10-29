@@ -93,7 +93,8 @@ void CascadeCNN::detection(const cv::Mat &img, std::vector<cv::Rect> &rectangles
     local_NMS();
     detect_24c_net();
     cal_24c_net();
-    local_NMS();
+    //local_NMS();
+    local_NMS_test();
     detect_48c_net();
     global_NMS();
     cal_48c_net();
@@ -463,6 +464,10 @@ void CascadeCNN::detect_net(int i)
     std::vector<cv::Rect> rectangles;
     std::vector<float> confidence;
     //cv::Size scale = cv::Size(48, 48);
+
+    if(rectangles_.size() == 0)
+        return;
+
     for(int j = 0; j < rectangles_.size(); j++)
     {
         cv::Mat img = crop(img_, rectangles_[j]);
@@ -492,6 +497,10 @@ void CascadeCNN::detect_net_batch(int i) {
     std::vector<cv::Rect> rectangles;
     std::vector<float> confidence;
     vector<cv::Mat> cur_imgs;
+
+    if(rectangles_.size() == 0)
+        return;
+
     for (int j = 0; j < rectangles_.size(); j++) {
         cv::Mat img = crop(img_, rectangles_[j]);
         if (img.size() != input_geometry_[i])
@@ -542,6 +551,9 @@ void CascadeCNN::calibrate_net(int i)
     std::vector<cv::Rect> rectangles;
     std::vector<float> confidence;
 
+    if(rectangles_.size() == 0)
+        return;
+
     for(int j = 0; j < rectangles_.size(); j++)
     {
         cv::Mat img = crop(img_, rectangles_[j]);
@@ -563,6 +575,9 @@ void CascadeCNN::calibrate_net_batch(int i)
     std::vector<float> confidence;
     std::vector<cv::Mat> imgs;
     int index_cal = 0;
+
+    if(rectangles_.size() == 0)
+        return;
 
     for(int j = 0; j < rectangles_.size(); j++)
     {
@@ -843,4 +858,24 @@ void CascadeCNN::img_show(cv::Mat img, std::string name)
 
     cv::imwrite("/home/xileli/Documents/program/CascadeCNN/result/" + name + ".jpg", img_show);
     //cv::waitKey(0);
+}
+
+void CascadeCNN::timer_begin()
+{
+    time_begin_ = std::chrono::high_resolution_clock::now();
+}
+
+void CascadeCNN::timer_end()
+{
+    time_end_ = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::milliseconds> (time_end_ - time_begin_);
+    record(time_span.count());
+}
+
+void CascadeCNN::record(double num)
+{
+    std::fstream file("/home/xileli/Documents/program/CascadeCNN/result/record.txt", ios::app);
+    //std::cout << num << std::endl;
+    file << num << std::endl;
+    file.close();
 }

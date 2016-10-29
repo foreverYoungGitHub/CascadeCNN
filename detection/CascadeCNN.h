@@ -11,6 +11,8 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <chrono>
+#include <fstream>
 
 using namespace caffe;
 
@@ -55,7 +57,12 @@ public:
     void calibrate_net(int i);
     void calibrate_net_batch(int i);
     void calibrate(std::vector<float> prediction, int j);
+
+
     void img_show(cv::Mat img, std::string name);
+    void timer_begin();
+    void timer_end();
+    void record(double num);
 
     cv::Mat crop(cv::Mat img, cv::Rect rect);
     void clear();
@@ -74,8 +81,9 @@ public:
     float threshold_NMS_ = 0.3;
     float scale_factor_ = 1.414;
     int dimension_ = 48;
-    int mode_pu_ = 1; //mode decides processing the neural network with cpu (0) or gpu (1)
+    int mode_pu_ = 0; //mode decides processing the neural network with cpu (0) or gpu (1)
 
+    std::chrono::high_resolution_clock::time_point time_begin_, time_end_;
 };
 
 
