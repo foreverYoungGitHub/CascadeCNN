@@ -26,7 +26,7 @@ public:
     bool generate_txt();
     bool txt_write(std::vector<cv::Rect> rects, std::vector<float> confidence, std::string img_path);
     bool img_write(std::vector<cv::Rect> rects, std::vector<float> confidence, std::string img_path);
-    string img_path_convert(string path);
+    std::string img_path_convert(std::string path);
 
     CascadeCNN * cascadeCNN_;
     std::string dataset_path_;
@@ -34,7 +34,8 @@ public:
     std::vector<std::string> img_path_;
     cv::Mat cur_img_;
     int i_;
-
+    int txt_write_state_ = 0;
+    int img_write_state_ = 1;
 
     std::string mean_file = "/home/xileli/Documents/library/caffe/data/ilsvrc12/imagenet_mean.binaryproto";
 

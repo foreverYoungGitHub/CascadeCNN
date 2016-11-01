@@ -83,7 +83,7 @@ public:
     float threshold_NMS_ = 0.3;
     float scale_factor_ = 1.414;
     int dimension_ = 48;
-    int mode_pu_ = 0; //mode decides processing the neural network with cpu (0) or gpu (1)
+    int mode_pu_ = 1; //mode decides processing the neural network with cpu (0) or gpu (1)
 
     std::chrono::high_resolution_clock::time_point time_begin_, time_end_;
 };

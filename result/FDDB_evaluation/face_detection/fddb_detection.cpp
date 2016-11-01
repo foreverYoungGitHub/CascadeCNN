@@ -115,10 +115,16 @@ bool fddb_detection::generate_txt()
             std::vector<float> confidence;
             cascadeCNN_->detection(cur_img_, cur_rect, confidence);
 
-            if(txt_write(cur_rect, confidence, img_path_[j]) && img_write(cur_rect, confidence, img_path_[j]))
+            if(txt_write_state_ == 1)
             {
-                std::cout << "Successful Detect Image:" << cur_img_path << std::endl;
+                txt_write(cur_rect, confidence, img_path_[j]);
             }
+
+            if(img_write_state_ == 1)
+            {
+                img_write(cur_rect, confidence, img_path_[j]));
+            }
+            std::cout << "Successful Detect Image:" << cur_img_path << std::endl;
         }
     }
 
@@ -149,6 +155,15 @@ bool fddb_detection::txt_write(std::vector<cv::Rect> rects, std::vector<float> c
              << rects[k].width << " "
              << confidence[k] << std::endl;
     }
+
+//    for(int k = 0; k < rects.size(); k++)
+//    {
+//        file << rects[k].x << " "
+//             << rects[k].y << " "
+//             << rects[k].width << " "
+//             << rects[k].width << " "
+//             << "1.0" << std::endl;
+//    }
 
     return true;
 
