@@ -103,6 +103,24 @@ void CascadeCNN::detection(const cv::Mat &img, std::vector<cv::Rect> &rectangles
     rectangles = rectangles_;
 }
 
+void CascadeCNN::detection(const cv::Mat img, std::vector<cv::Rect>& rectangles, std::vector<float>& confidence)
+{
+    Preprocess(img);
+    detect_12c_net();
+    cal_12c_net();
+    local_NMS();
+    detect_24c_net();
+    cal_24c_net();
+    //local_NMS();
+    local_NMS_test();
+    detect_48c_net();
+    global_NMS();
+    cal_48c_net();
+    global_NMS_specify();
+
+    rectangles = rectangles_;
+    confidence = confidence_;
+}
 
 void CascadeCNN::SetMean(const std::string& mean_file)
 {
@@ -576,6 +594,7 @@ void CascadeCNN::calibrate_net_batch(int i)
     std::vector<cv::Mat> imgs;
     int index_cal = 0;
 
+    int a = rectangles_.size();
     if(rectangles_.size() == 0)
         return;
 
@@ -584,8 +603,8 @@ void CascadeCNN::calibrate_net_batch(int i)
         cv::Mat img = crop(img_, rectangles_[j]);
         if (img.size() != input_geometry_[i]) {
             cv::resize(img, img, input_geometry_[i]);
-            imgs.push_back(img);
         }
+        imgs.push_back(img);
         //std::vector<cv::Mat> input_channels;
     }
     std::vector<float> prediction = Predict(imgs, i);

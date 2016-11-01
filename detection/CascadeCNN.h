@@ -24,7 +24,9 @@ public:
     ~CascadeCNN();
 
     void detection(const cv::Mat& img, std::vector<cv::Rect>& rectangles);
+    void detection(const cv::Mat img, std::vector<cv::Rect>& rectangles, std::vector<float>& confidence);
     void detection_test(const cv::Mat img, std::vector<cv::Rect>& rectangles);
+    
 
     std::vector<float> Predict(const cv::Mat& img, int i);
     std::vector<float> Predict(const std::vector<cv::Mat> imgs, int i);
@@ -77,7 +79,7 @@ public:
     std::string mean_file_;
 
     int strip_ = 4;
-    float threshold_confidence_ = 0.1;
+    float threshold_confidence_ = 0.05;
     float threshold_NMS_ = 0.3;
     float scale_factor_ = 1.414;
     int dimension_ = 48;

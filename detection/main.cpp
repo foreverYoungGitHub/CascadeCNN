@@ -29,12 +29,13 @@ int main() {
     vector<Rect> rectangles;
     //string img_path = "/home/xileli/Documents/dateset/AFW/WIDER_train/images/4--Dancing/4_Dancing_Dancing_4_33.jpg";
     //string img_path = "/home/xileli/Documents/dateset/AFW/WIDER_train/images/17--Ceremony/17_Ceremony_Ceremony_17_88.jpg";
-    string img_path = "/home/xileli/Documents/dateset/megaface/data/daniel/FlickrFinal2/901/9019583@N08/8032652775_0.jpg";
+    //string img_path = "/home/xileli/Documents/dateset/megaface/data/daniel/FlickrFinal2/901/9019583@N08/8032652775_0.jpg";
     //string img_path = "/home/xileli/Documents/dateset/megaface/data/daniel/FlickrFinal2/121/12105541@N05/4811548600_1.jpg";
     //string img_path = "/home/xileli/Documents/dateset/megaface/data/daniel/FlickrFinal2/908/9080049@N02/8963775598_2.jpg";
     //string img_path = "/home/xileli/Documents/dateset/AFW/WIDER_train/images/53--Raid/53_Raid_policeraid_53_26.jpg";
     //string img_path = "/home/xileli/Documents/dateset/AFW/WIDER_train/images/53--Raid/53_Raid_policeraid_53_35.jpg";
     //string img_path = "/home/xileli/Documents/dateset/AFW/WIDER_train/images/55--Sports_Coach_Trainer/55_Sports_Coach_Trainer_sportcoaching_55_185.jpg";
+    string img_path = "/home/xileli/Documents/dateset/FDDB/2002/08/03/big/img_462.jpg";
     Mat img = imread(img_path);
 
 
