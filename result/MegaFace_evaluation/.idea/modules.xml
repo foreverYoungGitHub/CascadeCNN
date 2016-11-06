@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/detection.iml" filepath="$PROJECT_DIR$/.idea/detection.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/MegaFace_evaluation.iml" filepath="$PROJECT_DIR$/.idea/MegaFace_evaluation.iml" />
     </modules>
   </component>
 </project>

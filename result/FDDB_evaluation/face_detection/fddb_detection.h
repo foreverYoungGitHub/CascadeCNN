@@ -15,6 +15,7 @@ class fddb_detection {
 public:
     fddb_detection();
     fddb_detection(std::string path);
+    fddb_detection(std::string dataset_path, CascadeCNN * cascadeCNN);
 
     void run();
 

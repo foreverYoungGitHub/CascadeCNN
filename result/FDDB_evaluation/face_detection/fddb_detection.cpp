@@ -13,6 +13,13 @@ fddb_detection::fddb_detection(std::string dataset_path)
     dataset_path_ = dataset_path;
 }
 
+fddb_detection::fddb_detection(std::string dataset_path, CascadeCNN * cascadeCNN)
+{
+    cascadeCNN_ = cascadeCNN;
+
+    dataset_path_ = dataset_path;
+}
+
 void fddb_detection::run()
 {
     if(!file_list_read())
@@ -122,7 +129,7 @@ bool fddb_detection::generate_txt()
 
             if(img_write_state_ == 1)
             {
-                img_write(cur_rect, confidence, img_path_[j]));
+                img_write(cur_rect, confidence, img_path_[j]);
             }
             std::cout << "Successful Detect Image:" << cur_img_path << std::endl;
         }

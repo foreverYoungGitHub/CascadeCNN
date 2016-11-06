@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 find_package(Caffe)
 include_directories(${Caffe_INCLUDE_DIRS})
 
-set(SOURCE_FILES main.cpp ../../../detection/CascadeCNN.cpp ../../../detection/CascadeCNN.h fddb_detection.cpp fddb_detection.h)
+set(SOURCE_FILES main.cpp ../../../detection/CascadeCNN.cpp ../../../detection/CascadeCNN.h fddb_detection.cpp fddb_detection.h ellipse_transform.cpp ellipse_transform.h GenSample.cpp GenSample.h)
 add_executable(face_detection ${SOURCE_FILES})
 
 target_link_libraries(face_detection ${Caffe_LIBRARIES})

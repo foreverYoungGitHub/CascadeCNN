@@ -894,7 +894,7 @@ void CascadeCNN::timer_end()
 void CascadeCNN::record(double num)
 {
     std::fstream file("/home/xileli/Documents/program/CascadeCNN/result/record.txt", ios::app);
-    //std::cout << num << std::endl;
+    std::cout << num << std::endl;
     file << num << std::endl;
     file.close();
 }

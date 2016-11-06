@@ -6,9 +6,13 @@
     </content>
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/fddb_detection.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/fddb_detection.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/main.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/GenSample.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ellipse_transform.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/fddb_detection.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ellipse_transform.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/GenSample.cpp" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">
