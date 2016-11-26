@@ -875,7 +875,7 @@ void CascadeCNN::img_show(cv::Mat img, std::string name)
                 cv::FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(255, 0, 0), 1, CV_AA);
     }
 
-    cv::imwrite("/home/xileli/Documents/program/CascadeCNN/result/" + name + ".jpg", img_show);
+    cv::imwrite("../result/" + name + ".jpg", img_show);
     //cv::waitKey(0);
 }
 
@@ -893,7 +893,7 @@ void CascadeCNN::timer_end()
 
 void CascadeCNN::record(double num)
 {
-    std::fstream file("/home/xileli/Documents/program/CascadeCNN/result/record.txt", ios::app);
+    std::fstream file("../result/record.txt", ios::app);
     std::cout << num << std::endl;
     file << num << std::endl;
     file.close();

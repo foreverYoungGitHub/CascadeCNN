@@ -2,6 +2,8 @@
 // Created by Yang on 16/10/17.
 //
 
+//#define CPU_ONLY = 1
+
 #ifndef CASCADECNN_CASCADECNN_H
 #define CASCADECNN_CASCADECNN_H
 
