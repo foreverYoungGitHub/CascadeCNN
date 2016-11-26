@@ -12,14 +12,11 @@ CascadeCNN::CascadeCNN(const std::vector<std::string> model_file,
                        const std::vector<std::string> trained_file,
                        const std::string &mean_file)
 {
-    if(mode_pu_ == 0)
-    {
+    #ifdef CPU_ONLY
         Caffe::set_mode(Caffe::CPU);
-    }
-    else
-    {
+    #else
         Caffe::set_mode(Caffe::GPU);
-    }
+    #endif
 
     for(int i = 0; i < model_file.size(); i++)
     {
